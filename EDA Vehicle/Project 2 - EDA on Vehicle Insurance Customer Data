@@ -1,0 +1,154 @@
+import pandas as pd
+import numpy as np
+df = pd.read_csv('customer_policy_details.csv')
+df.columns = ['customer_id','annual premium(in Rs)','sales channel code','vintage','response']
+#csvFile.columns = ['number','customer_id','annual premium(in Rs)','sales channel code','vintage and response']
+
+print(df)
+
+
+
+csvFile1 = pd.read_csv('customer_details.csv')
+csvFile1.columns = ['customer_id','Gender','age','driving licence present','region code','previously insured','vehicle age','vehicle damage']
+print(csvFile1)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+print(csvFile1['customer_id'].dropna().count())
+
+print('Total NO of Null values in the customer details is:',csvFile1.isnull().sum())
+print('')
+
+#print('No of Null values in column 0 is ',csvFile1['sr no'].isnull().sum().sum())
+print('No of Null values in customer_id is ',csvFile1['customer_id'].isnull().sum().sum())
+print('')
+print('No of Null values in Gender before replacing with mode of values is ',csvFile1['Gender'].isnull().sum())
+csvFile1['Gender'].fillna(csvFile1['Gender'].mode()[0] , inplace=True)
+print('No of Null values in Gender After replacing with mode of values is ',csvFile1['Gender'].isnull().sum())
+print('')
+print('No of Null values in Age before replacing with mean of values is ',csvFile1['age'].isnull().sum())
+csvFile1['age'].fillna(csvFile1['age'].mean() , inplace=True)
+print('No of Null values in Age before replacing with mean of values is ',csvFile1['age'].isnull().sum())
+print('')
+print('No of Null values in driving licence present After replacing with mean of values is ',csvFile1['driving licence present'].isnull().sum())
+csvFile1['driving licence present'].fillna(csvFile1['driving licence present'].mean() , inplace=True)
+print('No of Null values in driving licence present After replacing with mean of values is ',csvFile1['driving licence present'].isnull().sum())
+print('')
+print('No of Null values in region code Before replacing with mean of values is ',csvFile1['region code'].isnull().sum())
+csvFile1['region code'].fillna(csvFile1['region code'].mean() , inplace=True)
+print('No of Null values in region code After replacing wwith mean of values is ',csvFile1['region code'].isnull().sum())
+print('')
+print('No of Null values in previously issured Before replacing with mean of values is ',csvFile1['previously insured'].isnull().sum())
+csvFile1['previously insured'].fillna(csvFile1['previously insured'].mean() , inplace=True)
+print('No of Null values in previously insured After replacing with mean of values is ',csvFile1['region code'].isnull().sum())
+print('')
+print('No of Null values in vehicle age Before replacing with mode of values is ',csvFile1['vehicle age'].isnull().sum())
+csvFile1['vehicle age'].fillna(csvFile1['vehicle age'].mode()[0] , inplace=True)
+print('No of Null values in vehicle age After replacing with mode of values is ',csvFile1['vehicle age'].isnull().sum())
+print('')
+print('No of Null values in vehicle damage Before replacing with mode of values is ',csvFile1['vehicle damage'].isnull().sum())
+csvFile1['vehicle damage'].fillna(csvFile1['vehicle damage'].mode()[0] , inplace=True)
+print('No of Null values in vehicle damage After replacing with mode of values is ',csvFile1['vehicle damage'].isnull().sum())
+print('') 
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+print(df['customer_id'].dropna().count())
+
+print('Total NO of Null values in the customer details is:',df['customer_id'].isnull().sum())
+print('')
+print('No of Null values in annual premium(in Rs) Before replacing with mean of values is ',df['annual premium(in Rs)'].isnull().sum())
+df['annual premium(in Rs)'].fillna(df['annual premium(in Rs)'].mean() , inplace=True)
+print('No of Null values in annual premium(in Rs) After replacing with mean of values is ',df['annual premium(in Rs)'].isnull().sum())
+print('')
+print('No of Null values in sales channel code Before replacing with mean of values is ',df['sales channel code'].isnull().sum())
+df['sales channel code'].fillna(df['sales channel code'].mean() , inplace=True)
+print('No of Null values in sales channel code After replacing with mean of values is ',df['sales channel code'].isnull().sum())
+print('')
+print('No of Null values in vintage Before replacing with mean of values is ',df['vintage'].isnull().sum())
+df['vintage'].fillna(df['vintage'].mean() , inplace=True)
+print('No of Null values in vintage After replacing with mean of values is ',df['vintage'].isnull().sum())
+print('')
+print('No of Null values in response Before replacing with mean of values is ',df['response'].isnull().sum())
+df['response'].fillna(df['response'].mean() , inplace=True)
+print('No of Null values in response After replacing with mean of values is ',df['response'].isnull().sum())
+
+
+Q1 = df.describe().loc['25%','annual premium(in Rs)']
+Q3 = df.describe().loc['75%','annual premium(in Rs)']
+IQR = Q3-Q1
+print(df.loc[df['annual premium(in Rs)']<(Q1-IQR*1.5),'annual premium(in Rs)'].count())
+print(df.loc[df['annual premium(in Rs)']>(Q1+IQR*1.5),'annual premium(in Rs)'].count())
+
+
+df.loc[df["annual premium(in Rs)"]>(Q3+IQR*1.5),"annual premium(in Rs)"]=df["annual premium(in Rs)"].mean()
+print(df.loc[df["annual premium(in Rs)"]>(Q3+IQR*1.5),"annual premium(in Rs)"].count())
+
+
+Q1=df.describe().loc["25%","vintage"]
+Q3=df.describe().loc["75%","vintage"]
+IQR=Q3-Q1
+print(df.loc[df["vintage"]<(Q1-IQR*1.5),"vintage"].count())
+print(df.loc[df["vintage"]>(Q3+IQR*1.5),"vintage"].count())
+
+
+csvFile1["Gender"]=csvFile1["Gender"].str.strip()
+csvFile1["vehicle age"]=csvFile1["vehicle age"].str.strip()
+csvFile1["vehicle damage"]=csvFile1["vehicle damage"].str.strip()
+
+
+gender=pd.get_dummies(csvFile1["Gender"])
+vehicle_age=pd.get_dummies(csvFile1["vehicle age"])
+lv_vehicle_damage=pd.get_dummies(csvFile1["vehicle damage"])
+lv_d_l_p=pd.get_dummies(csvFile1["driving licence present"])
+lv_p_i=pd.get_dummies(csvFile1["previously insured"])
+lv_response=pd.get_dummies(df["response"])
+
+
+print(csvFile1.duplicated().sum())
+print(df.duplicated().sum())
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+master_df = pd.merge(csvFile1,df,on='customer_id')
+master_df
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Gender wise average annual premium 
+gender_df=master_df.groupby(["Gender"])["annual premium(in Rs)"].sum()
+gender_df1=master_df.groupby(["Gender"])["annual premium(in Rs)"].count()
+g_df=gender_df/gender_df1
+print('Average of')
+print(g_df)
+
+
+print(gender_df)
+
+
+age_df=master_df.groupby(["age"])["annual premium(in Rs)"].mean()
+print('Average of')
+print(age_df)
+#vehicle age wise average annual premium 
+print('')
+vehicle_age_df=master_df.groupby(["vehicle age"])["annual premium(in Rs)"].mean()
+print('Average of')
+print(vehicle_age_df)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Corr_coef=master_df["age"].corr(master_df["annual premium(in Rs)"])
+print(Corr_coef)
+
+
+
+if Corr_coef < -0.5:
+    print('Strong Negative Relationship')
+elif Corr_coef > 0.5:
+    print('Strong Postive Relationship')
+else :    
+    print('There is no relationship')
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
